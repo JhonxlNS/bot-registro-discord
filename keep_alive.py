@@ -54,7 +54,7 @@ def get_config():
         config['service'] = 'vps/local'
         
         # Verificar se podemos usar porta 80 (HTTP) ou 443 (HTTPS)
-        if os.geteuid() == 0:  # Se executando como root
+        if hasattr(os, 'geteuid') and os.geteuid() == 0:  # Se executando como root
             config['port'] = 80  # HTTP padrão
             if os.path.exists('/etc/ssl/certs') or os.path.exists('/ssl'):
                 config['enable_https'] = True
@@ -910,3 +910,4 @@ if __name__ == '__main__':
             time.sleep(1)
     except KeyboardInterrupt:
         print("\n👋 Servidor HTTP finalizado")
+
