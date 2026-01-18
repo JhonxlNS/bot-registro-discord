@@ -1,0 +1,57 @@
+# shard.yaml - Configuração para Shard Cloud
+name: discord-registration-bot
+description: Bot de registro com sistema de aprovação para Discord
+version: 1.0.0
+
+runtime:
+  type: docker
+  version: "3.11"
+
+build:
+  context: .
+  dockerfile: Dockerfile
+
+deploy:
+  replicas: 1
+  resources:
+    memory: 512Mi
+    cpu: "0.5"
+
+ports:
+  - containerPort: 8080
+    protocol: TCP
+    name: http
+
+env:
+  - name: DISCORD_TOKEN
+    description: "Token do bot Discord"
+    required: true
+  - name: PORT
+    value: "8080"
+    description: "Porta do servidor web"
+  - name: NODE_ENV
+    value: "production"
+  - name: PYTHONUNBUFFERED
+    value: "1"
+
+healthcheck:
+  path: /health
+  port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 30
+
+volumes:
+  - name: config
+    path: /app/config.json
+    size: 1Gi
+
+networking:
+  type: public
+  ports:
+    - 8080:8080
+
+logging:
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
